@@ -121,8 +121,7 @@ Goof Repo (GitHub) -> Quay (via Build Triggers) -> OpenShift
 These steps demonstrate one way to fix vulnerabilities with Snyk. You’ll integrate Snyk into the GitHub repository and open Pull Requests to upgrade vulnerable dependencies. The delivery pipeline will update the running Deployment.
 
 1. In Snyk, configure your GitHub account by navigating to Integrations -> GitHub.
-2. Import the Goof repo by going to Projects -> Add Projects -> GitHub.
-- Select the goof repository you generated from the template in Step 0. 
+2. Import the Goof repo by going to Projects -> Add Projects -> GitHub. Select the goof repository you generated from the template in Step 0. 
 3. After the import completes, review the files Snyk scanned. Notice the risks in the repository are broken down by the components of Goof that make up the running Deployment:
     - The `package.json` file shows risks introduced by open source dependencies,
     - The `Dockerfile` shows risks introduced by the container base image used,
