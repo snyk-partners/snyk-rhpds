@@ -106,7 +106,7 @@ Follow these steps to import the Goof deployment into Snyk and review the result
     - Details on the path, possible remediation, and the vulnerable function.
     - More information from the Snyk Intel DB and references to external disclosures.
 
-> For more information around interpreting results, visit [Snyk Priority Score and Kubernetes](). 
+> For more information around interpreting results, visit [Snyk Priority Score and Kubernetes](https://support.snyk.io/hc/en-us/articles/360010906897-Snyk-Priority-Score-and-Kubernetes). 
 
 This is the end of the short demo. If you performed Step 0, continue to Step 4 to show how to start addressing the vulnerabilities and issues in Goof. 
 
