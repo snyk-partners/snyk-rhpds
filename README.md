@@ -1,4 +1,4 @@
-# Welcome: Snyk on OpenShift for RHPDS 
+# Snyk on OpenShift for RHPDS 
 ## About this Workshop
 Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) to identify security and configuration risks in a sample application deployed into OpenShift. 
 
@@ -116,5 +116,5 @@ TODO: #1 Explore using OpenShift internal registry? Requires adding Image Pull S
 
 # Conclusion
 
-You reached the end of this workshop! This is one example of how Snyk guides developers through remediating vulnerabilities by proactively kicking off Pull Requests with potential fixes. There is much more we didn’t show, from our CI/CD integrations, CLI, API, and integrations into the Quay Registry. If you’re interested in other Snyk capabilities, check out the other [Red Hat Workshops in the Snyk Academy](https://solutions.snyk.io/partner-workshops/red-hat)!
+You reached the end of this workshop! This is one example of how Snyk guides developers through remediating vulnerabilities. There is much more we didn’t show, from our CI/CD integrations, CLI, API, and integrations into the Quay Registry. If you’re interested in other Snyk capabilities, check out the other [Red Hat Workshops in the Snyk Academy](https://solutions.snyk.io/partner-workshops/red-hat)!
 
