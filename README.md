@@ -83,10 +83,10 @@ In this section, you'll review the scan results within the Snyk UI.
 
 ![Upgrade Guidance](./images/upgrade-guidance.png)
 
-In Part 2 we'll use this upgrade guidance to apply a more secure base image to Goof. 
+In Part 2 we'll use this upgrade guidance, as well as explore the Snyk Infrastructure as Code configuration scan, to apply a more secure base image to Goof and address some of the configuration risks identified by the scan. 
 
 ## Part 2: Acting on Snyk Upgrade Guidance
-A benefit of using Snyk Monitor to monitor running workloads is that once imported into the UI, Snyk continues to monitor the workload, identifying security issues as new images are deployed and the workload configuration changes.
+A benefit of using Snyk Monitor to monitor running workloads is that once imported into the UI, Snyk continues to monitor the workload, re-testing for issues as new images are deployed and the workload configuration changes.
 
 In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk Infrastructure as Code (IaC) to address the security and configuration issues identified in Part 1 of the workshop.
 
