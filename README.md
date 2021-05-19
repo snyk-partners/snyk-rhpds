@@ -46,7 +46,7 @@ The Goof Deployment has been imported using the annotation method described abov
 
 In this section, you'll review the scan results within the Snyk UI. 
 
-1. Sign into Snyk, then navigate to the Projects tab. 
+1. Sign into Snyk. Ensure the Red Hat Partner organization is selected, then navigate to the Projects tab. 
 
 ![Snyk Projects Tab](./images/snyk-projects-tab.png)
 
