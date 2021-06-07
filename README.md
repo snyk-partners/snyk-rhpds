@@ -4,27 +4,25 @@ Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/
 
 The steps below guide you through:
 1. Reviewing the security and configuration scan results in the Snyk UI,
-2. Finding and applying a secure base image using Snyk’s upgrade guidance.
+2. Finding and applying a more secure base image using Snyk’s upgrade guidance,
+3. Securing the Goof application's deployment configuration within OpenShift.
 
 > Note: This workshop is intended to be used with the Red Hat Partner Demo System (RHPDS). For a non-RHPDS version, check out the [Red Hat Patterns in the Snyk Academy](https://solutions.snyk.io/partner-workshops/red-hat).
 
 > Note: To complete this workshop you'll need access to the Snyk NFR instance for Red Hat. Contact [Dave Meurer](mailto:dmeurer@redhat.com) or [Tomas Gonzalez](mailto:tomas@snyk.io) to request access.
 
-#TODO: #2 ADD UTMs? 
-
 ## Your demo environment
 Your OpenShift environment includes a Project assigned to you. Complete the workshop in the Project assigned to your user. Your Project includes:
 
-- A deployment of Snyk's intentionally vulnerable demo app, [Goof](https://github.com/snyk-partners/redhat-academy).  
-- The Snyk Kubernetes Monitor, deployed by the Snyk Operator.
+- A deployment of Snyk's vulnerable [Goof](https://github.com/snyk/goof) application.  
+- A running [Snyk Controller](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub) deployed by the Snyk Operator.
 
 Goof is externally exposed using a Route. Navigate to Networking > Routes > Goof to interact with it.
 
  Note: The Snyk Monitor uses Secrets for the Integration ID and registry credentials as shown in the [Snyk Operator Installation Docs](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub). In this workshop, RHPDS created these for you. 
 
-# Let's get started!
-## Before you begin: Understand how the Snyk Monitor works
-The Snyk Monitor integrates with OpenShift to test running workloads and identify security vulnerabilities and configuration risks that might make the workload less secure. 
+## How the Snyk Controller works
+The Snyk Controller integrates with OpenShift to test running workloads and identify security vulnerabilities and configuration risks that might make the workload less secure. 
 
 It communicates with the OpenShift API to determine which workloads are running, scans them, and reports results back to Snyk. The following workloads can be scanned:
 - Deployment
@@ -39,6 +37,7 @@ It communicates with the OpenShift API to determine which workloads are running,
 
 To import workloads into Snyk, users can select workloads in the Snyk UI, or import them automatically using annotations. These options are as described in [Adding Kubernetes workloads for security scanning](https://support.snyk.io/hc/articles/360003947117#UUID-a0526554-0943-3363-6977-7a11f766ede2).
 
+# Let's get started!
 ## Part 1: Reviewing the Goof Deployment Scan Results
 The Goof Deployment has been imported using the annotation method described above. You can see the workload annotation by navigating to the Deployments. 
 
