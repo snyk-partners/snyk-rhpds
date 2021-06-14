@@ -97,13 +97,14 @@ In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk I
 - Get the CLI Token from the Snyk UI
 - Set the SNYK_TOKEN environment variable
 - Install Snyk (npm i snyk)
+- Authenticate the CLI
 - Git Clone the Code
 - Build the Container as is
 - snyk container test
 - Review upgrade guidance
 - Apply Base Image
 - Push to Registry
-- Update the YAML in OpenShift
+- Update the YAML in OpenShift to reflect new registry
 - Bounce the Application in OpenShift
 - Revisit Snyk UI to verify new results
 
@@ -111,7 +112,7 @@ TODO: #1 Explore using OpenShift internal registry? Requires adding Image Pull S
 
 ### Fix Configuration Issues:
 - Snyk IaC test
-- Edit the YAML in the OpenShift UI
+- Edit the Deployment YAML in the OpenShift UI
 
 # Conclusion
 
