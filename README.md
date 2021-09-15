@@ -1,30 +1,29 @@
 # Snyk on OpenShift for RHPDS 
 ## About this Workshop
-Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) to identify security and configuration risks in a sample application deployed into OpenShift. 
+Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) and [Snyk Infrastructure as Code](https://snyk.io/product/infrastructure-as-code-security/) to identify security and configuration risks in a sample application deployed into OpenShift. 
 
 The steps below guide you through:
-1. Reviewing the security and configuration scan results in the Snyk UI,
-2. Finding and applying a more secure base image using Snyk’s upgrade guidance,
-3. Securing the Goof application's deployment configuration within OpenShift.
+1. Importing an OpenShift workload into Snyk for scanning and monitoring,
+2. Reviewing the security and configuration scan results in the Snyk UI,
+3. Finding and applying a more secure base image using Snyk’s upgrade guidance,
+4. Securing the Goof application's deployment configuration within OpenShift.
 
 > Note: This workshop is intended to be used with the Red Hat Partner Demo System (RHPDS). For a non-RHPDS version, check out the [Red Hat Patterns in the Snyk Academy](https://solutions.snyk.io/partner-workshops/red-hat).
 
 > Note: To complete this workshop you'll need access to the Snyk NFR instance for Red Hat. Contact [Dave Meurer](mailto:dmeurer@redhat.com) or [Tomas Gonzalez](mailto:tomas@snyk.io) to request access.
 
 ## Your demo environment
-Your OpenShift environment includes a Project assigned to you. Complete the workshop in the Project assigned to your user. Your Project includes:
+The OpenShift demo environment includes a Project assigned to you. Complete the workshop in your assigned Project. Your Project includes:
 
-- A deployment of Snyk's vulnerable [Goof](https://github.com/snyk/goof) application.  
+- A deployment of Snyk's vulnerable [Goof](https://github.com/snyk/goof) application, and  
 - A running [Snyk Controller](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub) deployed by the Snyk Operator.
 
 Goof is externally exposed using a Route. Navigate to Networking > Routes > Goof to interact with it.
 
- Note: The Snyk Monitor uses Secrets for the Integration ID and registry credentials as shown in the [Snyk Operator Installation Docs](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub). In this workshop, RHPDS created these for you. 
+ Note: Deploying the Snyk Monitor into a non-RHPDS cluster requires Secrets for the Integration ID and registry credentials as shown in the [Snyk Operator Installation Docs](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub). For this workshop, RHPDS creates these for you. 
 
 ## How the Snyk Controller works
-The Snyk Controller integrates with OpenShift to test running workloads and identify security vulnerabilities and configuration risks that might make the workload less secure. 
-
-It communicates with the OpenShift API to determine which workloads are running, scans them, and reports results back to Snyk. The following workloads can be scanned:
+The Snyk Controller integrates with OpenShift to test running workloads and identify security vulnerabilities and configuration risks that might make the workload less secure. It communicates with the OpenShift API to determine which workloads are running, scans them, and reports results back to Snyk. The following workloads can be scanned:
 - Deployment
 - DeploymentConfig
 - ReplicaSets
@@ -38,30 +37,34 @@ It communicates with the OpenShift API to determine which workloads are running,
 To import workloads into Snyk, users can select workloads in the Snyk UI, or import them automatically using annotations. These options are as described in [Adding Kubernetes workloads for security scanning](https://support.snyk.io/hc/articles/360003947117#UUID-a0526554-0943-3363-6977-7a11f766ede2).
 
 # Let's get started!
-## Part 1: Reviewing the Goof Deployment Scan Results
-The Goof Deployment has been imported using the annotation method described above. You can see the workload annotation by navigating to the Deployments. 
-
-#TODO: #3 Add Image of Deployments in OCP Console
-
-In this section, you'll review the scan results within the Snyk UI. 
+## Part 1: Import the Goof Deployment into Snyk
+Start by importing the Goof Deployment into Snyk, so we can review the security and configuration scan results.
 
 1. Sign into Snyk. Ensure the Red Hat Partner organization is selected, then navigate to the Projects tab. 
 
 ![Snyk Projects Tab](./images/snyk-projects-tab.png)
 
-2. Locate the Project associated with your OpenShift Project. Each item is named according to its OpenShift metadata as follows: Project/kind/name.
+2. Click the Add Projects button, then select the Kubernetes tile.
+
+![Add Projects Button](./images/add-kubernetes-project.png)
+
+3. In the workload selection screen, select the user assigned to you, then select the Goof workload for import.
+
+![Import Goof](./images/import-workload.png)
+
+4. After the import completes, find the Snyk project imported from your assigned OpenShift project. Each imported Snyk project item is named according to its OpenShift metadata as follows: Project/kind/name.
 
 ![Imported Projects](./images/imported-projects.png)
 
-3. Expand the project list to see a list of the images used by the workload. For workloads with multiple images, the top row aggregates the count of vulnerabilities across all images.
+5. Expand the project list to see a list of the images used by the workload. For workloads with multiple images, the top row aggregates the count of vulnerabilities across all images.
 
 ![Project List](./images/project-list.png)
 
-4. Click the workload link to see details around the security posture of the workload configuration. For information on what we test for, visit [viewing project details and test results](https://support.snyk.io/hc/en-us/articles/360003916178-Viewing-project-details-and-test-results).
+6. Click the workload link to see details around the security posture of the workload configuration. For information on what we test for, visit [viewing project details and test results](https://support.snyk.io/hc/en-us/articles/360003916178-Viewing-project-details-and-test-results).
 
 ![Workload Configuration](./images/workload-config.png)
 
-5. Return to the Projects Tab, now click the image name to view a list of its vulnerabilities. Scroll down to see the list of issues, ordered by Snyk's [Priority Score](https://support.snyk.io/hc/en-us/articles/360009884837). Each card represents a vulnerability in the image, and displays:
+7. Return to the Projects Tab, now click the image name to view a list of its vulnerabilities. Scroll down to see the list of issues, ordered by Snyk's [Priority Score](https://support.snyk.io/hc/en-us/articles/360009884837). Each card represents a vulnerability in the image, and displays:
     - The issue type, and informative links to the [Snyk Intel DB](https://snyk.io/product/vulnerability-database/), CVE, and CWE
     - The direct and/or indirect dependency that introduced the vulnerability,
     - Details on the path and possible remediation,
@@ -71,11 +74,11 @@ In this section, you'll review the scan results within the Snyk UI.
 
 ![Issue Card](./images/issue-card.png)
 
-6. Switch to the Dependencies Tab to see the container's Dependency Tree.
+8. Switch to the Dependencies Tab to see the container's Dependency Tree.
 
 ![Dependency Tree](./images/dependency-tree.png)
 
-7. Return to the Issues Tab. To give us a head start remediating the vulnerabilities in Goof, Snyk presents base image upgrade guidance grouped by how likely they are to be compatible with our application. 
+9. Return to the Issues Tab. To give us a head start remediating the vulnerabilities in Goof, Snyk presents base image upgrade guidance grouped by how likely they are to be compatible with our application. 
     - Minor upgrades are the most likely to be compatible with little work, 
     - Major upgrades can introduce breaking changes depending on image usage,
     - Alternative architecture images are shown for more technical users to investigate.
@@ -87,13 +90,14 @@ In Part 2 we'll use this upgrade guidance, as well as explore the Snyk Infrastru
 ## Part 2: Acting on Snyk Upgrade Guidance
 A benefit of using Snyk Monitor to monitor running workloads is that once imported into the UI, Snyk continues to monitor the workload, re-testing for issues as new images are deployed and the workload configuration changes.
 
-In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk Infrastructure as Code (IaC) to address the security and configuration issues identified in Part 1 of the workshop.
+In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk Infrastructure as Code (IaC) to address the security and configuration issues identified in Part 1 of the workshop. Let's begin!
 
-> Note: You'll need a login to Quay.io to complete this Part.
-
-> Note: EVERYTHING BELOW HERE IS WIP WHILE WE FINALIZE
+> Note: You'll need accounts for GitHub and Quay.io to complete this Part.
 
 ### Fix Container Issues:
+
+1. 
+
 - Get the CLI Token from the Snyk UI
 - Set the SNYK_TOKEN environment variable
 - Install Snyk (npm i snyk)
