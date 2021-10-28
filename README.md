@@ -84,3 +84,6 @@ Start by importing the Goof Deployment into Snyk, so we can review the security 
     - Alternative architecture images are shown for more technical users to investigate.
 
 ![Upgrade Guidance](./images/upgrade-guidance.png)
+
+# Conclusion
+You reached the end of this workshop! This is one example of how Snyk guides developers through identifying vulnerabilities. There is much more we didn’t show, from our CI/CD integrations, CLI, API, and integrations into the Quay Registry. If you’re interested in other Snyk capabilities, check out the other Red Hat Workshops in the Snyk Academy!
