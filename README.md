@@ -96,15 +96,49 @@ In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk I
 
 ### Fix Container Issues:
 
-1. 
+#### Install Snyk and authenticate
 
-- Get the CLI Token from the Snyk UI
-- Set the SNYK_TOKEN environment variable
-- Install Snyk (npm i snyk)
-- Authenticate the CLI
-- Git Clone the Code
-- Build the Container as is
-- snyk container test
+In this next section, we'll have you run Snyk commands at a CLI.
+
+The [Snyk Docs](https://docs.snyk.io/features/snyk-cli/install-the-snyk-cli) contain instructions on how you can install the CLI with popular package managers (npm, brew, scoop) on your system.  We recommend you install the CLI, and npm installs are one popular way.  We recommend installing the latest:
+
+```
+npm install snyk@latest -g
+```
+
+Once installed, you need to authenticate.  In this workshop setup, we'll use an API token for the multiple members from different groups.  The process to create your API token is documented at [Snyk Docs](https://docs.snyk.io/features/snyk-cli/install-the-snyk-cli/authenticate-the-cli-with-your-account#authenticate-using-your-api-token).  When you create your token, we recommend you set an environment variable.  This is an example for Linux shells:
+
+```
+export SNYK_TOKEN=<VALUE OF YOUR API TOKEN>
+```
+
+#### Clone the code
+
+In this workshop, we use the deliberately vulnerable application named "goof."  This Node.js application is availble from our public GitHub repository at `https://github.com/snyk/goof.git`. Clone out the project, and the remaining examples work in folder with the default name of `goof`.
+
+```
+git clone https://github.com/snyk/goof.git
+cd goof
+```
+
+#### Build the Container
+
+The Goof repository contains a README with instructions on how to build the code.  We'll use docker to build the containers, but you are also free to use other container build tools such as [Skopeo](https://github.com/containers/skopeo).  The repository contains docker commands to build the container, and we copy those instructions here for convenience to start and stop the running containers:
+
+```
+docker-compose up --build
+docker-compose down
+```
+
+#### snyk container test
+
+TOOD: Explain the purpose of running this command:
+
+```
+snyk container test
+```
+
+
 - Review upgrade guidance
 - Apply Base Image
 - Push to Registry
