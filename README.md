@@ -91,68 +91,182 @@ In Part 2 we'll use this upgrade guidance, as well as explore the Snyk Infrastru
 A benefit of using Snyk Monitor to monitor running workloads is that once imported into the UI, Snyk continues to monitor the workload, re-testing for issues as new images are deployed and the workload configuration changes.
 
 In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk Infrastructure as Code (IaC) to address the security and configuration issues identified in Part 1 of the workshop. Let's begin!
+'
+### Pre-Requisites
 
-> Note: You'll need accounts for GitHub and Quay.io to complete this Part.
+#### Create a Snyk Token
 
-### Fix Container Issues:
+You received an invitation to the *OpenShift Workshop* Snyk Organization. Accept it, then create a Snyk Account for yourself, or use your existing Snyk account. 
 
-#### Install Snyk and authenticate
+Once signed in, switch to the OpenShift Workshop Organization under the Red Hat Group.
 
-In this next section, we'll have you run Snyk commands at a CLI.
+![Workshop Organization](./images/workshop-org.png)
 
-The [Snyk Docs](https://docs.snyk.io/features/snyk-cli/install-the-snyk-cli) contain instructions on how you can install the CLI with popular package managers (npm, brew, scoop) on your system.  We recommend you install the CLI, and npm installs are one popular way.  We recommend installing the latest:
+Navigate to [Snyk Account Settings](https://app.snyk.io/org/openshift-workshop/manage/service-accounts) and create a Service Account Token. Name it after your assigned user and save it as an environment variable. You’ll need it later.
 
-```
-npm install snyk@latest -g
-```
+![Service Account](./images/service-account.png)
 
-Once installed, you need to authenticate.  In this workshop setup, we'll use an API token for the multiple members from different groups.  The process to create your API token is documented at [Snyk Docs](https://docs.snyk.io/features/snyk-cli/install-the-snyk-cli/authenticate-the-cli-with-your-account#authenticate-using-your-api-token).  When you create your token, we recommend you set an environment variable.  This is an example for Linux shells:
-
-```
-export SNYK_TOKEN=<VALUE OF YOUR API TOKEN>
+```sh
+SNYK_TOKEN=<<your_snyk_token>>
 ```
 
+#### Install the Snyk CLI
+
+In this module we use the Snyk CLI to test our Container Image and IAC files. Visit the Snyk documentation to [Install the Snyk CLI](https://docs.snyk.io/features/snyk-cli/install-the-snyk-cli) and install it on your system. After installing, verify your installation by running: 
+
+```sh
+snyk --version
+```
+
+Authenticate the Snyk CLI using the Snyk Token.
+
+```sh
+snyk auth $SNYK_TOKEN
+```
+
+> This token will stop working after this workshop. You can continue using your Free Snyk account after the workshop by re-authenticating the Snyk CLI to your Personal Organization.
+
+#### Create a Quay.io Account and Token
+
+Log in to Quay.io with your Red Hat ID.
+
+Save your Quay Username as an Environment Variable to use it in future steps. Your Quay Username is displayed in the upper right corner of Quay.io.
+
+TODO: add image
+
+```sh
+QuayUser=<<your_quay_id>>
+```
+
+In this module you’ll push container images to Quay.io. Log in to Quay.io by running the following command:
+
+```sh
+docker login quay.io -u $QuayUser
+```
+
+Enter your password when prompted.
+
+#### Install and authenticate OpenShift tools
+
+TODO: Ask Dave if we include this...
+
+We'll use the `oc` command line to interact with the OpenShift cluster. You can install the OpenShift CLI (oc) either by downloading the binary or by using an RPM.
+
+Follow the [OpenShift Documentation](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html) to install the OC CLI.  
+
+### Part 2, Module 1: Addressing Container Vulnerabilities
 #### Clone the code
 
-In this workshop, we use the deliberately vulnerable application named "goof."  This Node.js application is availble from our public GitHub repository at `https://github.com/snyk/goof.git`. Clone out the project, and the remaining examples work in folder with the default name of `goof`.
-
+In this workshop, we use the deliberately vulnerable application named "goof."  This Node.js application is available from our public GitHub repository at `https://github.com/snyk-partners/goof-openshift`. Clone the repo, and change into the application directory. 
 ```
-git clone https://github.com/snyk/goof.git
-cd goof
-```
-
-#### Build the Container
-
-The Goof repository contains a README with instructions on how to build the code.  We'll use docker to build the containers, but you are also free to use other container build tools such as [Skopeo](https://github.com/containers/skopeo).  The repository contains docker commands to build the container, and we copy those instructions here for convenience to start and stop the running containers:
-
-```
-docker-compose up --build
-docker-compose down
+git clone https://github.com/snyk-partners/goof-openshift
+cd goof-openshift
 ```
 
-#### snyk container test
+#### Build the Container Image
 
-TOOD: Explain the purpose of running this command:
+Now that you’ve cloned the repo to your working environment, build the image that runs Goof in OpenShift using the following command:
 
 ```
-snyk container test
+docker build -t quay.io/$QUAY_USER/goof:before .
 ```
 
+#### Scan the Container Image
 
-- Review upgrade guidance
-- Apply Base Image
-- Push to Registry
+As we saw in Part 1 of this workshop, Snyk identified vulnerable components in this image. Developers can use the Snyk CLI to get vulnerability information and base image upgrade guidance.
+
+Scan the image by running the following command.
+
+```
+snyk container test quay.io/$QUAY_USER/goof:before --file=Dockerfile
+```
+
+When the scan completes, review the list of vulnerabilities. There are quite a few! If available, Snyk will recommend other potential base images to help you build your container with as few vulnerabilities as possible.
+
+![Base Image Recommendations](./images/base-recommendations.png)
+
+TODO: Add this image ^
+
+Snyk recommends less vulnerable base images grouped by how likely they are to be compatible:
+
+Minor upgrades are the most likely to be compatible with little work,
+Major upgrades can introduce breaking changes depending on image usage,
+Alternative architecture images are shown for more technical users to investigate.
+
+#### Apply a more secure base image
+
+To apply a new base image, open the Dockerfile in and replace, or comment out, the old base image with a new one. In this example, we’ll use node:14.16.1.
+
+TODO: Validate this base image. Update the repo Dockerfile from node6 to node14.
+
+> Open Source vulnerabilities are disclosed daily, so the recommendations you see may differ as the Snyk vulnerability database is constantly updated. This example shows upgrade recommendations as of the day of writing. The actual version numbers may differ for you.
+
+```Dockerfile
+#FROM node:14.1.0
+FROM node:14.16.1
+
+RUN mkdir /usr/src/goof
+COPY . /usr/src/goof
+WORKDIR /usr/src/goof
+
+RUN npm install
+EXPOSE 3112
+EXPOSE 31337
+CMD ["npm", "start"]
+```
+When ready, save the changes.
+
+Now build and push the image to Quay.io, using a new tag.
+
+docker build -t quay.io/$QUAY_USER/goof:after .
+docker push quay.io/$QUAY_USER/goof:after
+
+In the next step we’ll re-deploy the application to OpenShift.
+
+#### Modify the Goof Deployment's config
+
+Dave: do we want to do this through OC or in the OpenShift Developer Experience?
+
 - Update the YAML in OpenShift to reflect new registry
 - Bounce the Application in OpenShift
 - Revisit Snyk UI to verify new results
 
-TODO: #1 Explore using OpenShift internal registry? Requires adding Image Pull Secrets where the Snyk Monitor can access them. 
+TODO: Write these steps.
 
 ### Fix Configuration Issues:
-- Snyk IaC test
+With Snyk Infrastructure as Code, you can test your configuration files directly from the CLI. 
+
+#### Scan for IAC issues with the CLI
+
+Scan for IAC issues in the Deployment file with the Snyk CLI by running the following command.
+
+```sh
+snyk iac test manifests/
+```
+
+#### Review the IAC issues
+For each file checked, Snyk displays a list of vulnerabilities—sorted by severity, where each is detailed as follows:
+
+<ul>A clear heading line - specifying the issue that has been detected, the severity of that issue and the Snyk Policy Id for that particular issue.
+<ul>Location - the property path within the configuration file at which the issue has been identified. 
+
+For example,
+The path of this issue is specified as...
+In the following code you can see that line 1 represents the contents of the ... block named ... which is missing the ... field.
+
+![IAC Issue](./images/iac-issue.png)
+
+We'll use this information to guide changes to the deployment configuration in OpenShift.
+
+#### Secure the configuration in OpenShift
+
+TODO: Do we want to update locally then use OC to push the change, or use the Developer Experience? 
+
 - Edit the Deployment YAML in the OpenShift UI
+
+If you want, continue until all the configuration checks called out by Snyk are green.
 
 # Conclusion
 
-You reached the end of this workshop! This is one example of how Snyk guides developers through remediating vulnerabilities. There is much more we didn’t show, from our CI/CD integrations, CLI, API, and integrations into the Quay Registry. If you’re interested in other Snyk capabilities, check out the other [Red Hat Workshops in the Snyk Academy](https://solutions.snyk.io/partner-workshops/red-hat)!
+You reached the end of this workshop! This is one example of how Snyk guides developers through remediating vulnerabilities. There is much more we didn’t show, from our CI/CD integrations, API, and integrations into SCM and the Quay Registry. If you’re interested in other Snyk capabilities, let us know how much you liked this workshop and we'll work on adding it more in for future sessions! 
 
