@@ -247,8 +247,8 @@ snyk iac test manifests/
 #### Review the IAC issues
 For each file checked, Snyk displays a list of vulnerabilities—sorted by severity, where each is detailed as follows:
 
-<ul>A clear heading line - specifying the issue that has been detected, the severity of that issue and the Snyk Policy Id for that particular issue.
-<ul>Location - the property path within the configuration file at which the issue has been identified. 
+- A clear heading line - specifying the issue that has been detected, the severity of that issue and the Snyk Policy Id for that particular issue.
+- Location - the property path within the configuration file at which the issue has been identified. 
 
 For example,
 The path of this issue is specified as...
