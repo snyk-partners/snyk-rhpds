@@ -233,7 +233,7 @@ Dave: do we want to do this through OC or in the OpenShift Developer Experience?
 
 TODO: Write these steps.
 
-### Fix Configuration Issues:
+### Part 2, Module 2: Fix Configuration Issues
 With Snyk Infrastructure as Code, you can test your configuration files directly from the CLI. 
 
 #### Scan for IAC issues with the CLI
