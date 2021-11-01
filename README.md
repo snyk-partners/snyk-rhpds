@@ -1,6 +1,6 @@
 # Snyk on OpenShift for RHPDS 
 ## About this Workshop
-Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) and [Snyk Infrastructure as Code](https://snyk.io/product/infrastructure-as-code-security/) to identify security and configuration risks in a sample application deployed into OpenShift. 
+Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) and [Snyk Infrastructure as Code](https://snyk.io/product/infrastructure-as-code-security/) to identify security and configuration risks in a sample application deployed into OpenShift. In this developer-centric workshop, you'll need to be familiar with some common tools, described later.
 
 The steps below guide you through:
 1. Importing an OpenShift workload into Snyk for scanning and monitoring,
@@ -92,7 +92,18 @@ A benefit of using Snyk Monitor to monitor running workloads is that once import
 
 In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk Infrastructure as Code (IaC) to address the security and configuration issues identified in Part 1 of the workshop. Let's begin!
 '
-### Pre-Requisites
+### PreRequisites
+
+In this module, you will need accounts to access these systems:
+- Snyk
+- Quay.io
+- Redhat Openshift Cluster (your instructor will set you up)
+
+You will also need to access a few developer tools:
+- skopeo or docker
+- 
+
+We'll focus on using the OpenShift UI, but you may find it handy to use `kubectl` or `oc` commands directly, especially if you run the workshop on your own time.
 
 #### Create a Snyk Token
 
@@ -130,18 +141,21 @@ snyk auth $SNYK_TOKEN
 
 Log in to Quay.io with your Red Hat ID.
 
-Save your Quay Username as an Environment Variable to use it in future steps. Your Quay Username is displayed in the upper right corner of Quay.io.
+Save your Quay Username as an Environment Variable to use it in future steps. Your Quay Username is displayed in the upper right corner of Quay.io, and then the **Account Settings** page 
 
-TODO: add image
+![Quay Avatar](./images/quay-user-avatar.png)
+
+![Quay User Settings](./images/quay-user-settings.png)
+
 
 ```sh
-QuayUser=<<your_quay_id>>
+QUAY_USER=<<your_quay_id>>
 ```
 
 In this module you’ll push container images to Quay.io. Log in to Quay.io by running the following command:
 
 ```sh
-docker login quay.io -u $QuayUser
+docker login quay.io -u $QUAY_USER
 ```
 
 Enter your password when prompted.
@@ -202,17 +216,19 @@ TODO: Validate this base image. Update the repo Dockerfile from node6 to node14.
 > Open Source vulnerabilities are disclosed daily, so the recommendations you see may differ as the Snyk vulnerability database is constantly updated. This example shows upgrade recommendations as of the day of writing. The actual version numbers may differ for you.
 
 ```Dockerfile
-#FROM node:14.1.0
+#FROM node:6-stretch
 FROM node:14.16.1
 
 RUN mkdir /usr/src/goof
+RUN mkdir /tmp/extracted_files
 COPY . /usr/src/goof
 WORKDIR /usr/src/goof
 
+RUN npm update
 RUN npm install
-EXPOSE 3112
-EXPOSE 31337
-CMD ["npm", "start"]
+EXPOSE 3001
+EXPOSE 9229
+ENTRYPOINT ["npm", "start"]
 ```
 When ready, save the changes.
 
