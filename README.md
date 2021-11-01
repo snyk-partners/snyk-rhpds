@@ -40,7 +40,7 @@ To import workloads into Snyk, users can select workloads in the Snyk UI, or imp
 
 > Before this workshop you received an e-mail inviting you to the *OpenShift Workshop* Snyk Organization. You must accept that invite to continue.
 
-After accepting , start by importing the Goof Deployment into Snyk so we can review the security and configuration scan results.
+Start by importing the Goof Deployment into Snyk so we can review the security and configuration scan results.
 
 1. Sign in to Snyk, then switch to the OpenShift Workshop Organization under the Red Hat Group.
 
