@@ -46,7 +46,7 @@ Start by importing the Goof Deployment into Snyk so we can review the security a
 
 ![Workshop Organization](./images/workshop-org.png)
 
-2. Ensure the OpenShift Workshop Organization is selected, then navigate to the Projects tab. 
+2. Navigate to the Projects tab. 
 
 ![Snyk Projects Tab](./images/snyk-projects-tab.png)
 
