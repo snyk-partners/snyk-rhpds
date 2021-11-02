@@ -13,7 +13,7 @@ You'll receive an e-mail the day before the workshop adding you to the OpenShift
 
 ### Create a Snyk Account and Install the Snyk CLI
 
-1. Create a Snyk Account for yourself, or use your existing Snyk account. 
+1. [Create a Snyk Account](https://app.snyk.io/login?utm_campaign=RHPDS&utm_medium=Partner&utm_source=Red-Hat) for yourself, or use your existing Snyk account. 
 
 2. Visit the Snyk documentation to [Install the Snyk CLI](https://docs.snyk.io/features/snyk-cli/install-the-snyk-cli) and install it on your system. 
 
