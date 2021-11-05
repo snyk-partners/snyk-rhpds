@@ -8,7 +8,7 @@ The steps below guide you through:
 3. Finding and applying a more secure base image using Snyk’s upgrade guidance,
 4. Securing the Goof application's deployment configuration within OpenShift.
 
-> Note: This workshop is intended to be used with the Red Hat Partner Demo System (RHPDS). For a non-RHPDS version, check out the [Red Hat Patterns in the Snyk Academy](https://docs.snyk.io/partner-workshops/red-hat).
+> Note: This workshop is intended to be used with the Red Hat Partner Demo System (RHPDS).
 
 > Note: For this workshop your facilitator invited you into the *RHPDS Workshop* organization in Snyk. To complete the workshop on your own, you need a Snyk account with the [Business plan](snyk.io/plans) and your own cluster to deploy the Kubernetes integration into. 
 
@@ -183,6 +183,8 @@ EXPOSE 3001
 ENTRYPOINT ["npm", "start"]
 ```
 2. When ready, save the changes. Now build and push the image to Quay.io, using a new tag.
+
+> You will need to have logged in to Quay.io to push images.
 
 ```sh
 docker build -t quay.io/$QUAY_USER/goof:after .
