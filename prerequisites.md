@@ -41,7 +41,11 @@ docker --version
 
 1. Create an account or sign in to [Quay.io](https://quay.io).
 
-2. Save your Quay Username as an Environment Variable to use it in future steps. 
+2. Once signed in, create a Repository on Quay.io. We recommend calling it `goof`.
+
+![Create Repo](images/quay-repo.png)
+
+3. Save your Quay Username as an Environment Variable to use it in future steps. 
 
 > Your Quay Username is displayed in the upper right corner of Quay.io. 
 

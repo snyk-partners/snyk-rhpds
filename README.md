@@ -215,8 +215,6 @@ With the new Container Image built and in Quay, we'll update the deployment in O
 
 ### Part 2, Module 2: Fix Configuration Issues
 
-TODO: Crisp these steps up!
-
 In Part 1 we also saw that Goof was poorly configured. With Snyk Infrastructure as Code, you can test configuration files directly from the CLI. 
 
 1. Back in your Terminal, scan for IAC issues in the Deployment file with the Snyk CLI by running the following command.
@@ -230,28 +228,35 @@ snyk iac test manifests/
 - A clear heading line - specifying the issue that has been detected, the severity of that issue and the Snyk Policy Id for that particular issue.
 - Location - the property path within the configuration file at which the issue has been identified. 
 
-For example,
-The path of this issue is specified as...
-In the following code you can see that line 1 represents the contents of the ... block named ... which is missing the ... field.
-
 ![IAC Issue](./images/iac-issue.png)
 
 We'll use this information to guide changes to the deployment configuration in OpenShift.
 
-3. Back in the OpenShift UI, return to the Goof Deployment.
+3. Back in OpenShift, return to the Goof Deployment, then Edit Deployment settings as before. This time, switch to the YAML view. 
 
-4. Modify the deployment to add limits for the CPU and Memory, using the snippet of YAML below.
+![YAML View](images/yaml-view.png)
+
+4. Modify the deployment to add limits for the CPU and Memory, as shown in the snippet of YAML below. Press Save when finished.
 
 ```YAML
-Add this.
+resources:
+  limits:
+    cpu: 250m
+    memory: 100Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
 ```
-5. Navigate to Topology -> Goof and set the number of replicas to 0 then 1. 
 
 6. Back in Snyk, find your Project and verify that your workload has better configuration!
+
+![Fixed IAC issues](images/better-iac-issues.png)
 
 That's it! If you want, continue until all the configuration checks called out by Snyk are green.
 
 # Conclusion
 
-You reached the end of this workshop! This is one example of how Snyk guides developers through remediating vulnerabilities. There is much more we didn’t show, from our CI/CD integrations, API, and integrations into SCM and the Quay Registry. If you’re interested in other Snyk capabilities, let us know how much you liked this workshop and we'll work on adding it more in for future sessions! 
+You reached the end of this workshop! This is one example of how Snyk guides developers through remediating vulnerabilities. There is much more we didn’t show, from our CI/CD integrations, API, and integrations into SCM and the Quay Registry. 
+
+If you’re interested in other Snyk capabilities, let us know how much you liked this workshop and we'll work on adding it more in for future sessions! You can also subscribe to and get started with Snyk from the [Red Hat Marketplace](https://marketplace.redhat.com/en-us/products/snyk-container). 
 
