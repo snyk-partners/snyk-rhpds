@@ -10,10 +10,10 @@ The steps below guide you through:
 
 > Note: This workshop is intended to be used with the Red Hat Partner Demo System (RHPDS). For a non-RHPDS version, check out the [Red Hat Patterns in the Snyk Academy](https://docs.snyk.io/partner-workshops/red-hat).
 
-> Note: For this workshop your facilitator invited you into the *OpenShift Workshop* organization in Snyk. To complete the workshop on your own, you need a Snyk account with the [Business plan](snyk.io/plans) and your own cluster to deploy the Kubernetes integration into. 
+> Note: For this workshop your facilitator invited you into the *RHPDS Workshop* organization in Snyk. To complete the workshop on your own, you need a Snyk account with the [Business plan](snyk.io/plans) and your own cluster to deploy the Kubernetes integration into. 
 
 ## Your demo environment
-Before we started you received credentials to an OpenShift cluster with a Project assigned to you. Complete the workshop in your assigned Project. Your Project includes:
+You were assigned credentials to a Project in an OpenShift cluster. Complete the workshop in your assigned Project. Your Project includes:
 
 - A deployment of Snyk's vulnerable [Goof](https://github.com/snyk/goof) application, and  
 - A running [Snyk Controller](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub) deployed by the Snyk Operator.
@@ -38,11 +38,11 @@ To import workloads into Snyk, users can select workloads in the Snyk UI, or imp
 
 # Part 1: Import the Goof Deployment into Snyk
 
-> Before this workshop you received an e-mail inviting you to the *OpenShift Workshop* Snyk Organization. You must accept that invite to continue.
+> You must have joined the *RHPDS Workshop* Snyk Organization to continue.
 
-Start by importing the Goof Deployment into Snyk so we can review the security and configuration scan results.
+First, start by importing the Goof Deployment into Snyk so we can review the application's security and configuration scan results.
 
-1. Sign in to Snyk, then switch to the OpenShift Workshop Organization under the Red Hat Group.
+1. Sign in to Snyk, then switch to the RHPDS Workshop Organization under the Red Hat Group.
 
 ![Workshop Organization](./images/workshop-org.png)
 
@@ -54,7 +54,7 @@ Start by importing the Goof Deployment into Snyk so we can review the security a
 
 ![Add Projects Button](./images/add-kubernetes-project.png)
 
-4. In the workload selection screen, select the user assigned to you, then select the Goof workload for import.
+4. In the workload selection screen, find the OpenShift cluster named by your facilitator, select the user assigned to you, then select the Goof workload for import. 
 
 ![Import Goof](./images/import-workload.png)
 
@@ -121,7 +121,7 @@ snyk auth $SNYK_TOKEN
 ## Part 2, Module 1: Addressing Container Vulnerabilities
 ### Clone the code
 
-In Part 1 we saw vulnerabilities present in the Goof application. To remediate them, you'll re-build the image with a more secure base image. This code for Goof is available at `https://github.com/snyk-partners/goof-openshift`. 
+In Part 1 we saw vulnerabilities present in the Goof application. To remediate them, you'll re-build the image with a more secure base image. This code for Goof is available at `https://github.com/snyk-partners/goof-rhpds`. 
 
 1. Clone the repo locally, and change into the application directory. 
 
@@ -164,7 +164,7 @@ Snyk recommends less vulnerable base images grouped by how likely they are to be
 - Major upgrades can introduce breaking changes depending on image usage,
 - Alternative architecture images are shown for more technical users to investigate.
 
-> Open Source vulnerabilities are disclosed daily, so the recommendations you see may differ as the Snyk vulnerability database is constantly updated. This example shows upgrade recommendations as of the day of writing. The actual version numbers may differ for you.
+> Open Source vulnerabilities are disclosed daily, so the recommendations you see may differ as the Snyk vulnerability database is constantly updated. This example shows upgrade recommendations as of the day of writing.
 
 ### Apply a more secure base image
 
@@ -174,15 +174,12 @@ Snyk recommends less vulnerable base images grouped by how likely they are to be
 #FROM node:14.1.0
 FROM node:14.16.1
 
-RUN mkdir /usr/src/goof
-RUN mkdir /tmp/extracted_files
+RUN mkdir /usr/src/goof && mkdir /tmp/extracted_files
 COPY . /usr/src/goof
 WORKDIR /usr/src/goof
 
-RUN npm update
-RUN npm install
+RUN npm update && npm install
 EXPOSE 3001
-EXPOSE 9229
 ENTRYPOINT ["npm", "start"]
 ```
 2. When ready, save the changes. Now build and push the image to Quay.io, using a new tag.
@@ -196,19 +193,25 @@ In the next step we’ll re-deploy the application to OpenShift.
 
 ### Modify the Deployment to re-deploy Goof
 
-TODO: Crisp these steps up!
-
 With the new Container Image built and in Quay, we'll update the deployment in OpenShift to reference our new, safer, image.
 
-1. Sign in to OpenShift and switch to the developer experience.
+1. Sign in to OpenShift, and switch to the Developer Perspective if you're not automatically brought there.
 
-2. Navigate to Deployments -> Goof
+![Developer Perspective](images/dev-perspective.png)
 
-3. Change the Container Registry that the Deployment references to your new image on Quay.io
+2. Navigate to Topology -> Goof -> Actions -> Edit Deployment to change the deployment settings.
 
-4. Navigate to Topology -> Goof and set the number of replicas to 0 then 1. 
+![Edit Deployment](images/edit-deployment.png)
 
-5. Back in Snyk, find your Project and verify that your workload is now using a less vulnerable image.
+3. Change the Image Name that the Deployment references to your new image on Quay.io, then press Save.
+
+![Image Name](images/image-name.png)
+
+4. Wait until OpenShift replaces the old Container with the new one. You can track the progress in the Topology view by clicking on Goof.
+
+5. Back in Snyk, find your Project and verify that your workload is now using a less vulnerable image. Compare your new image to the old one, `snyklabs/goof`.
+
+![New Scan Results](images/new-scan-results.png)
 
 ### Part 2, Module 2: Fix Configuration Issues
 
