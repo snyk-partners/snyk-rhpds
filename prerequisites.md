@@ -62,3 +62,8 @@ docker login quay.io -u $QUAY_USER
 ```
 
 Enter your password when prompted.
+
+### Get access to an OpenShift cluster
+TODO: Write this!
+1. Install oc
+2. oc login
