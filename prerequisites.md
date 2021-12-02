@@ -8,8 +8,9 @@ In this workshop, you will use of the following tools. Create free accounts for:
 You'll also need access to a few developer tools.
 - Any IDE of your choosing (we recommend VS Code)
 - Docker
+- Snyk CLI
 
-You'll receive an e-mail the day before the workshop adding you to the OpenShift Workshop organization in Snyk. Keep an eye out! 
+You'll receive an e-mail prior to the workshop adding you to a Snyk Organization for this workshop. Keep an eye out! 
 
 ### Create a Snyk Account and Install the Snyk CLI
 
