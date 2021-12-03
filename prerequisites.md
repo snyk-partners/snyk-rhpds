@@ -8,7 +8,6 @@ In this workshop, you will use of the following tools. Create free accounts for:
 
 You'll also need access to a few developer tools.
 - Any IDE (we use VS Code)
-- Docker
 - OpenShift CLI (oc)
 
 You'll receive an e-mail the day before the workshop adding you to the OpenShift Workshop organization in Snyk. Keep an eye out! 
@@ -24,31 +23,11 @@ You'll receive an e-mail the day before the workshop adding you to the OpenShift
 git clone https://github.com/$GITHUB_USER/snyk-rhpds
 ```
 
-### Create a Snyk Account and Install the Snyk CLI
+### Create a Snyk Account
 
 1. [Create a Snyk Account](https://app.snyk.io/login?utm_campaign=RHPDS&utm_medium=Partner&utm_source=Red-Hat) for yourself, or use your existing Snyk account. 
 
-2. Visit the Snyk documentation to [Install the Snyk CLI](https://docs.snyk.io/features/snyk-cli/install-the-snyk-cli) and install it on your system. 
-
-3. After installing, verify your installation by running: 
-
-```sh
-snyk --version
-```
-
-### Install Docker on your workstation
-
-You'll need docker tools to build and push container images. 
-
-1. Visit [Get Docker](https://docs.docker.com/get-docker/) and install Docker on your system. 
-
-> This workshop guide uses Docker to build and push container images. If you prefer buildah and skopeo we recommend proficiency with those tools as the workshop guide is written for docker and staff might not be able to support you. 
-
-2. Verify Docker installed correctly.
-
-```sh
-docker --version
-```
+2. Send a request to the #channel Slack channel and tag Remko to request access to the Snyk Org for this Workshop. 
 
 ### Create a Quay Account and Repo
 
@@ -64,19 +43,7 @@ docker --version
 
 ![Quay Avatar](./images/quay-user-avatar.png)
 
-```sh
-QUAY_USER=<<your_quay_id>>
-```
-
-3. In this module you’ll push container images to Quay.io. Log in to Quay.io by running the following command:
-
-```sh
-docker login quay.io -u $QUAY_USER
-```
-
-Enter your password when prompted.
-
 ### Install the OpenShift CLI
-TODO: Write this!
-1. Install oc
+#TODO: Finish the Cluster Request step 2 in case user needs to request access. 
+1. Install oc on your workstation by following the [installation steps](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html).
 2. oc login

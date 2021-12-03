@@ -1,26 +1,22 @@
-# Snyk on OpenShift for RHPDS 
+# Snyk Workshop for IBM DDC Conference! 
 ## About this Workshop
 Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) and [Snyk Infrastructure as Code](https://snyk.io/product/infrastructure-as-code-security/) to identify security and configuration risks in a sample application deployed into OpenShift. In this developer-centric workshop, you'll need to be familiar with some common tools, described later.
 
 The steps below guide you through:
-1. Importing an OpenShift workload into Snyk for scanning and monitoring,
-2. Reviewing the security and configuration scan results in the Snyk UI,
-3. Finding and applying a more secure base image using Snyk’s upgrade guidance,
-4. Securing the Goof application's deployment configuration within OpenShift.
+1. Creating a delivery pipeline using OpenShift Pipelines 
+2. Importing an OpenShift workload into Snyk for scanning and monitoring,
+3. Reviewing the security and configuration scan results in the Snyk UI,
+4. Finding and applying a more secure base image using Snyk’s upgrade guidance,
+5. Securing the Goof application's deployment configuration within OpenShift.
 
-> Note: This workshop is intended to be used with the Red Hat Partner Demo System (RHPDS).
-
-> Note: For this workshop your facilitator invited you into the *RHPDS Workshop* organization in Snyk. To complete the workshop on your own, you need a Snyk account with the [Business plan](snyk.io/plans) and your own cluster to deploy the Kubernetes integration into. 
+> Note: For this workshop your facilitator invited you into the *IBM DDC WORKSHOP* organization in Snyk. To complete the workshop on your own, you need a Snyk account with the [Business plan](snyk.io/plans) and your own cluster to deploy the Kubernetes integration into. 
 
 ## Your demo environment
-You were assigned credentials to a Project in an OpenShift cluster. Complete the workshop in your assigned Project. Your Project includes:
+You were provided a cluster for this workshop. Complete the workshop in your assigned Cluster. Your Cluster includes:
 
-- A deployment of Snyk's vulnerable [Goof](https://github.com/snyk/goof) application, and  
 - A running [Snyk Controller](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub) deployed by the Snyk Operator.
 
-Goof is externally exposed using a Route. Navigate to Networking > Routes > Goof to interact with it.
-
-> Note: Not using RHPDS? The Snyk Monitor needs Secrets for the Integration ID and registry credentials as shown in the [Snyk Operator Installation Docs](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub). For this workshop, RHPDS creates these for you. 
+> Note: Not following along live? The Snyk Monitor needs Secrets for the Integration ID and registry credentials as shown in the [Snyk Operator Installation Docs](https://support.snyk.io/hc/en-us/articles/360006548317-Install-the-Snyk-controller-with-OpenShift-4-and-OperatorHub). For this workshop, RHPDS creates these for you. 
 
 ## How the Snyk Controller works
 The Snyk Controller integrates with OpenShift to test running workloads and identify security vulnerabilities and configuration risks that might make the workload less secure. It communicates with the OpenShift API to determine which workloads are running, scans them, and reports results back to Snyk. The following workloads can be scanned:
@@ -36,13 +32,19 @@ The Snyk Controller integrates with OpenShift to test running workloads and iden
 
 To import workloads into Snyk, users can select workloads in the Snyk UI, or import them automatically using annotations. These options are as described in [Adding Kubernetes workloads for security scanning](https://support.snyk.io/hc/articles/360003947117#UUID-a0526554-0943-3363-6977-7a11f766ede2).
 
-# Part 1: Import the Goof Deployment into Snyk
+# Part 1: Deploy an Application to OpenShift using Tekton Pipelines
+TODO: Oliver Write this!
+1. Create Quay secret (oc create secret)
+2. Replace the GitHub Repo in pipeline.yml
+3. Oliver's instructions
 
-> You must have joined the *RHPDS Workshop* Snyk Organization to continue.
+# Part 2: Import the Goof Deployment into Snyk
+
+> You must have joined the *IBM DDS WORKSHOP* Snyk Organization to continue.
 
 First, start by importing the Goof Deployment into Snyk so we can review the application's security and configuration scan results.
 
-1. Sign in to Snyk, then switch to the RHPDS Workshop Organization under the Red Hat Group.
+1. Sign in to Snyk, then switch to the IBM DDC WORKSHOP Organization under the Red Hat Group.
 
 ![Workshop Organization](./images/workshop-org.png)
 
@@ -88,61 +90,33 @@ First, start by importing the Goof Deployment into Snyk so we can review the app
 
 ![Upgrade Guidance](./images/upgrade-guidance.png)
 
-## You completed Part 1! 
+## You completed Part 2! 
 
-In Part 2 we'll use this upgrade guidance, as well as explore the Snyk Infrastructure as Code configuration scan, to apply a more secure base image to Goof and address some of the configuration risks identified by the scan. 
+In Part 3 we'll use this upgrade guidance, as well as explore the Snyk Infrastructure as Code configuration scan, to apply a more secure base image to Goof and address some of the configuration risks identified by the scan. 
 
-# Part 2: Acting on Snyk Upgrade Guidance
+# Part 3: Acting on Snyk Upgrade Guidance
 A benefit of using Snyk Monitor to monitor running workloads is that once imported into the UI, Snyk continues to monitor the workload, re-testing for issues as new images are deployed and the workload configuration changes.
 
 In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk Infrastructure as Code (IaC) to address the security and configuration issues identified in Part 1 of the workshop. Let's begin!
 
-## Get Ready: Create a Snyk Token and Authenticate Snyk
+## Get Ready: Import the Goof-RHPDS Repo into Snyk
 
-1. Sign in to Snyk, then switch to the OpenShift Workshop Organization under the Red Hat Group.
+TODO: Tomas to write the steps to import te application into Snyk. 
+
+1. Sign in to Snyk, then switch to the IBM DDC WORKSGOP Organization under the Red Hat Group.
 
 ![Workshop Organization](./images/workshop-org.png)
 
-2. Navigate to [Snyk Account Settings](https://app.snyk.io/org/openshift-workshop/manage/service-accounts) and create a Service Account Token. Name it after your assigned user and save it as an environment variable. You’ll need it later.
+2. Create GitHub Intgration
+3. Import
 
-![Service Account](./images/service-account.png)
-
-```sh
-SNYK_TOKEN=<<your_snyk_token>>
-```
-3. Authenticate the Snyk CLI using the Snyk Token.
-
-```sh
-snyk auth $SNYK_TOKEN
-```
-
-> This token will stop working after this workshop. You can continue using your Free Snyk account after the workshop by re-authenticating the Snyk CLI to your Personal Organization.
-
-## Part 2, Module 1: Addressing Container Vulnerabilities
+## Part 3, Module 1: Addressing Container Vulnerabilities
 ### Clone the code
+
+TODO: Write the Dockerfile project instructions
 
 In Part 1 we saw vulnerabilities present in the Goof application. To remediate them, you'll re-build the image with a more secure base image. This code for Goof is available at `https://github.com/snyk-partners/goof-rhpds`. 
 
-1. Clone the repo locally, and change into the application directory. 
-
-```sh
-git clone https://github.com/snyk-partners/goof-rhpds
-cd goof-rhpds
-```
-
-2. Now build the image that runs Goof in OpenShift using the following command:
-
-> Ensure you set the Environment Variable $QUAY_USER as instructed in the pre-requisites document.
-
-```sh
-docker build -t quay.io/$QUAY_USER/goof:before .
-```
-
-3. Verify the image built by listing the built container images.
-
-```sh
-docker images
-```
 
 ### Scan the Container Image for Vulnerabilities
 
@@ -166,64 +140,19 @@ Snyk recommends less vulnerable base images grouped by how likely they are to be
 
 > Open Source vulnerabilities are disclosed daily, so the recommendations you see may differ as the Snyk vulnerability database is constantly updated. This example shows upgrade recommendations as of the day of writing.
 
-### Apply a more secure base image
+### Apply a more secure base image with a PR
+
+TODO: TOmas qwill write
 
 1. To apply a new base image, open the Dockerfile and replace, or comment out, the old base image with a new one. In this example, we’ll use node:14.16.1.
 
-```Dockerfile
-#FROM node:14.1.0
-FROM node:14.16.1
-
-RUN mkdir /usr/src/goof && mkdir /tmp/extracted_files
-COPY . /usr/src/goof
-WORKDIR /usr/src/goof
-
-RUN npm update && npm install
-EXPOSE 3001
-ENTRYPOINT ["npm", "start"]
-```
-2. When ready, save the changes. Now build and push the image to Quay.io, using a new tag.
-
-> You will need to have logged in to Quay.io to push images.
-
-```sh
-docker build -t quay.io/$QUAY_USER/goof:after .
-docker push quay.io/$QUAY_USER/goof:after
-```
-
-In the next step we’ll re-deploy the application to OpenShift.
-
-### Modify the Deployment to re-deploy Goof
-
-With the new Container Image built and in Quay, we'll update the deployment in OpenShift to reference our new, safer, image.
-
-1. Sign in to OpenShift, and switch to the Developer Perspective if you're not automatically brought there.
-
-![Developer Perspective](images/dev-perspective.png)
-
-2. Navigate to Topology -> Goof -> Actions -> Edit Deployment to change the deployment settings.
-
-![Edit Deployment](images/edit-deployment.png)
-
-3. Change the Image Name that the Deployment references to your new image on Quay.io, then press Save.
-
-![Image Name](images/image-name.png)
-
-4. Wait until OpenShift replaces the old Container with the new one. You can track the progress in the Topology view by clicking on Goof.
-
-5. Back in Snyk, find your Project and verify that your workload is now using a less vulnerable image. Compare your new image to the old one, `snyklabs/goof`.
-
-![New Scan Results](images/new-scan-results.png)
-
-### Part 2, Module 2: Fix Configuration Issues
+### Part 3, Module 2: Fix Configuration Issues
 
 In Part 1 we also saw that Goof was poorly configured. With Snyk Infrastructure as Code, you can test configuration files directly from the CLI. 
 
-1. Back in your Terminal, scan for IAC issues in the Deployment file with the Snyk CLI by running the following command.
+TODO: TOMAS TO WRITE USING THE GITHUB INTEGRATION
 
-```sh
-snyk iac test manifests/
-```
+1. Back in your Terminal, scan for IAC issues in the Deployment file with the Snyk CLI by running the following command.
 
 2. Review the IAC scan results. For each file, Snyk displays a list of vulnerabilities—sorted by severity, where each is detailed as follows:
 
