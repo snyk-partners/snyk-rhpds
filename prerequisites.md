@@ -10,7 +10,17 @@ You'll also need access to a few developer tools.
 - Docker
 - Snyk CLI
 
-You'll receive an e-mail prior to the workshop adding you to a Snyk Organization for this workshop. Keep an eye out! 
+The Snyk Kubernetes Monitor, used in this workshop, is a paid Snyk component. You can request access to an environment for this workshop by reaching out to the DDC Conference support channel on Slack and tagging Remko De Knikker or Oliver Rodriguez.
+
+### Set up your cluster to run the workshop
+To perform this workshop on your environment you'll need to set up your cluster.
+1. Install the Snyk Kubernetes Monitor using the instructions to install it from [OperatorHub](https://docs.snyk.io/snyk-container/image-scanning-library/kubernetes-workload-and-image-scanning/install-the-snyk-controller-with-openshift-4-and-operatorhub) or using [Helm](https://docs.snyk.io/products/snyk-container/image-scanning-library/kubernetes-workload-and-image-scanning/install-the-snyk-controller-with-helm).
+
+2. Deploy the vulnerable demo application from the [goof-rhpds repo](https://github.com/snyk-partners/goof-rhpds) using oc.
+
+```sh
+oc create -f manifests
+```
 
 ### Create a Snyk Account and Install the Snyk CLI
 
