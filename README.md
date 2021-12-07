@@ -33,6 +33,16 @@ The Snyk Controller integrates with OpenShift to test running workloads and iden
 
 To import workloads into Snyk, users can select workloads in the Snyk UI, or import them automatically using annotations. These options are as described in [Adding Kubernetes workloads for security scanning](https://support.snyk.io/hc/articles/360003947117#UUID-a0526554-0943-3363-6977-7a11f766ede2).
 
+# Get access to the OpenShift Cluster
+
+1. [Contact us in Slack](https://digitaldevcon.slack.com/archives/C01SRHYT7QB) to request access to the OpenShift cluster for this workshop. 
+
+2. Once signed in, click your username in the upper right corner and Copy Login Command.
+
+![Login Command](images/oc-login-command.png)
+
+3. Authenticate the OC client on your workstation.
+
 # Part 1: Set up a CI/CD Pipeline using Tekton Pipelines
 
 1. Ensure that you have completed all of the [prerequisites](https://github.com/snyk-partners/snyk-rhpds/blob/add-tekton/prerequisites.md) before continuing. 
@@ -97,15 +107,15 @@ To import workloads into Snyk, users can select workloads in the Snyk UI, or imp
 
 1. Click on the `Create New Repository` button near the top right of the page.
 
-    ![create new repo](../images/newRepo.png)
+    ![create new repo](images/quay-repo.png)
 
 1. Click on your username at the top right corner of the page and select `Account Settings`
 
-    ![account settings](../images/accountSettings.png)
+    ![account settings](images/quay-user-avatar.png)
 
 1. Then, click on the tab on the left side of the page that looks like a robot.
 
-    ![robotAccount](../images/robotAccount.png)
+    ![robotAccount](https://github.com/snyk-partners/goof-rhpds/blob/develop/images/robotAccount.png?raw=true)
 
 1. Next, click on the blue `Create Robot Account` button on the right side of the page.
 
@@ -113,11 +123,11 @@ To import workloads into Snyk, users can select workloads in the Snyk UI, or imp
 
 1. Then, on the next page, click on the checkbox next to the `goof` repository and in the `Permission` dropdown select `Admin`. When done, click on `Add Permissions`.
 
-    ![permissions](../images/permissions.png)
+    ![permissions](https://github.com/snyk-partners/goof-rhpds/blob/develop/images/permissions.png?raw=true)
 
 1. Next we need the credentials of the new robot account. Click on the settings icon to the right of the robot accounts table and select `View Credentials`.
 
-    ![view Creds](../images/viewCreds.png)
+    ![view Creds](https://github.com/snyk-partners/goof-rhpds/blob/develop/images/viewCreds.png?raw=true)
 
 1. You should now see the username and password for the robot account. Keep this page up and navigate back to your terminal.
 
@@ -199,7 +209,7 @@ To import workloads into Snyk, users can select workloads in the Snyk UI, or imp
 
 1. Navigate to your version of the goof repository and click on the `Settings` button.
 
-    ![repo settings](../images/repoSettings.png)
+    ![repo settings](https://github.com/snyk-partners/goof-rhpds/blob/develop/images/repoSettings.png?raw=true)
 
 1. Click on `Webhooks` in the left side of the page and click on the `Add Webhook` button that appears on the right side of the Webhooks page.
 
@@ -215,7 +225,7 @@ To import workloads into Snyk, users can select workloads in the Snyk UI, or imp
 
         - A list of events should appear. Scroll down and select `Pull_requests`
 
-        ![pull requests](../images/pullRequests.png)
+        ![pull requests](https://github.com/snyk-partners/goof-rhpds/blob/develop/images/pullRequests.png?raw=true)
 
     - Next, scroll down and click on `Add webhook`.
 
@@ -238,7 +248,7 @@ With that configured, our pipeline will be triggered to build on any pull reques
 1. Navigate to your openshift cluster console and find the Pipelines section on the left navigation menu, and select Pipelines.
 1. From the Pipelines page select the tab that says Pipeline Runs.
 
-    ![pipeline page](../images/pipelinePage.png)
+    ![pipeline page](https://github.com/snyk-partners/goof-rhpds/blob/develop/images/pipelinePage.png?raw=true)
 
 1. You will then be able to see the status of the build process using the pipeline.
     - There are 5 steps:
@@ -250,7 +260,7 @@ With that configured, our pipeline will be triggered to build on any pull reques
 
 1. If you view the output of the `snyk-test` step you can see the output of the Snyk scan.
 
-    ![scan results](../images/scanResults.png)
+    ![scan results](https://github.com/snyk-partners/goof-rhpds/blob/develop/images/scanResults.png?raw=true)
 
 # Part 2: Scan the Goof Deployment with Snyk
 
@@ -333,7 +343,7 @@ Now that it's imported, let's start fixing issues!
 
 When the Repo imports, Snyk shows the supported manifest files in the repo, including our container's Dockerfile.
 
-[!Dockerfile Project](images/dockerfile-project.png)
+![Dockerfile Project](images/dockerfile-project.png)
 
 1. Click the Dockerfile to enter the project, and review the base image suggestions. Snyk recommends less vulnerable base images grouped by how likely they are to be compatible:
 
@@ -389,7 +399,9 @@ In Part 1 we also saw that Goof was poorly configured. With Snyk Infrastructure 
 
 We'll use this information to guide changes to the deployment configuration in OpenShift.
 
-3. Back in OpenShift, return to the Goof Deployment, then Edit Deployment settings as before. This time, switch to the YAML view. 
+3. Back in OpenShift, return to the Goof Deployment, then Edit Deployment settings. This time, switch to the YAML view. 
+
+![Deployment Settings](images/edit-deployment.png)
 
 ![YAML View](images/yaml-view.png)
 
