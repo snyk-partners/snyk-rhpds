@@ -3,7 +3,7 @@
 Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) and [Snyk Infrastructure as Code](https://snyk.io/product/infrastructure-as-code-security/) to identify security and configuration risks in a sample application deployed into OpenShift. 
 
 In this workshop you'll:
-1. Creating am application delivery pipeline using OpenShift Pipelines 
+1. Creating an application delivery pipeline using OpenShift Pipelines 
 2. Import the application's OpenShift deployment into Snyk for scanning and monitoring,
 3. Review the security and configuration scan results in the Snyk UI,
 4. Apply a more secure base image using Snyk’s upgrade guidance,
