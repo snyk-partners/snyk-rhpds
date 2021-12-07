@@ -32,13 +32,226 @@ The Snyk Controller integrates with OpenShift to test running workloads and iden
 
 To import workloads into Snyk, users can select workloads in the Snyk UI, or import them automatically using annotations. These options are as described in [Adding Kubernetes workloads for security scanning](https://support.snyk.io/hc/articles/360003947117#UUID-a0526554-0943-3363-6977-7a11f766ede2).
 
-# Part 1: Deploy an Application to OpenShift using Tekton Pipelines
-TODO: Oliver Write this!
-1. Create Quay secret (oc create secret)
-2. Replace the GitHub Repo in pipeline.yml
-3. Oliver's instructions
+# Part 1: Set up a CI/CD Pipeline using Tekton Pipelines
 
-# Part 2: Import the Goof Deployment into Snyk
+1. Ensure that you have completed all of the [prerequisites](https://github.com/snyk-partners/snyk-rhpds/blob/add-tekton/prerequisites.md) before continuing. 
+
+1. The repo that you cloned in the prerequisties has a deployment file that we must edit before we deploy later on. This file currently points to the main Goof repo but instead we need to point to your copy of the repo.
+
+    - In a code editor open up `./manifests/goof.yaml` and look at line 19.
+
+        ```yaml
+        image: snyklabs/goof:latest #Edit with your Quay ID
+        ```
+
+    - Remove `snyklabs` and add `quay.io/<your quay username>` replacing `<your quay username>` with your actual quay username. For example, my username is odrodrig_us so my line 19 will look like this:
+
+        ```yaml
+        image: quay.io/odrodrig_us/goof:latest #Edit with your Quay ID
+        ```
+
+    - Save the file when you are done.
+
+1. Install the Tekton tasks
+
+    1. Install git-clone task
+
+        ```bash
+        oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
+        ```
+
+    1. Install snyk-node task
+
+        ```bash
+        oc apply -f https://raw.githubusercontent.com/garethr/snyk-tekton/master/node/node.yaml
+        ```
+
+    1. Install Kaniko task (For building container images)
+
+        ```bash
+        kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kaniko/0.5/kaniko.yaml
+        ```
+
+    1. Install the deploy-using-kubectl task
+
+        ```bash
+        kubectl apply -f pipeline/deploy-using-kubectl.yaml
+        ```
+
+1. In order to use Snyk from our pipeline we will need a service account that will authenticate with Snyk. For this workshop, a service account has already been created for you and the token that will be used for authentication is already in the command below:
+
+1. Run the following command, to create the secret with the Snyk service account token
+
+    ```bash
+    oc create secret generic snyk --from-literal=token=e83425dd-b269-42fb-9926-7a333793dc56
+    ```
+
+    This token will only be available for the duration of the workshop.
+
+
+## Setting up access to Quay
+1. For this application we will be using the Quay container registry to store our container images. First we need to create a new repository in order to push images with our robot account.
+
+    Navigate to [http://www.quay.io](http://www.quay.io)
+
+1. Click on the `Create New Repository` button near the top right of the page.
+
+    ![create new repo](../images/newRepo.png)
+
+1. Click on your username at the top right corner of the page and select `Account Settings`
+
+    ![account settings](../images/accountSettings.png)
+
+1. Then, click on the tab on the left side of the page that looks like a robot.
+
+    ![robotAccount](../images/robotAccount.png)
+
+1. Next, click on the blue `Create Robot Account` button on the right side of the page.
+
+1. In the new dialog that appears give the robot a name like, `snyk_pipeline`. When done, click `Create Robot Account` at the bottom of the dialog window.
+
+1. Then, on the next page, click on the checkbox next to the `goof` repository and in the `Permission` dropdown select `Admin`. When done, click on `Add Permissions`.
+
+    ![permissions](../images/permissions.png)
+
+1. Next we need the credentials of the new robot account. Click on the settings icon to the right of the robot accounts table and select `View Credentials`.
+
+    ![view Creds](../images/viewCreds.png)
+
+1. You should now see the username and password for the robot account. Keep this page up and navigate back to your terminal.
+
+1. Enter the following command and paste the username from the Quay robot account
+
+    ```bash
+    export REGISTRY_USERNAME=
+    ```
+
+    Press enter when done.
+
+1. Then, enter the following command and paste in the password from the Quay robot account.
+
+    ```bash
+    export REGISTRY_PASSWORD=
+    ```
+
+    Press enter when done.
+
+1. Next, we need to create the secret in OpenShift with these credentials so that we can authenticate with the registry from our pipeline. Run the following command to create the secret:
+
+    ```bash
+    oc create secret docker-registry quay-secret --docker-server=https://quay.io --docker-username=$REGISTRY_USERNAME --docker-password=$REGISTRY_PASSWORD
+    ```
+
+1. Now that the secret has been created, we need to give the Pipeline service account on OpenShift access to it so that it can be used in the build pipeline.
+
+    ```bash
+    oc secrets link pipeline quay-secret
+    ```
+
+1. Then, we need to add an annotation to our secret so that it can be used in Tekton.
+
+    ```bash
+    oc annotate secret quay-secret tekton.dev/docker-0=quay.io
+    ```
+
+## Create OpenShift Pipeline Components
+
+1. Apply the pipeline
+
+    ```bash
+    oc apply -f pipeline/pipeline.yaml
+    ```
+
+1. Create a PVC for pipeline to use
+
+    ```bash
+    oc apply -f pipeline/snyk-pvc.yaml
+    ```
+
+1. Create the Tekton Triggers components
+
+    ```bash
+    oc apply -f pipeline/triggers/
+    ```
+
+1. Next, in order to get webhook events from GitHub we need to create a secret. This secret isn't like an authentication token but rather a string that will be used to match the incoming events to ensure that we are listening to the correct webhook.
+
+    ```bash
+    oc create secret generic github-token --from-literal=token=1234567
+    ```
+
+1. One of the resources we created is the EventListener which acts as a sink to accept webhook events such as pull_request events from GitHub. By default, this service is only available internal to the cluster so we need to expose it to outside traffic via an OpenShift Route.
+
+    ```bash
+    oc expose service el-github-pr
+    ```
+
+1. Now we need to get the route that we just created so that we can create a webhook on GitHub.
+
+    ```bash
+    oc get route el-github-pr --template='http://{{.spec.host}}'
+    ```
+
+    Copy the URL that is returned.
+
+## Creating the GitHub webhook
+
+1. Navigate to your version of the goof repository and click on the `Settings` button.
+
+    ![repo settings](../images/repoSettings.png)
+
+1. Click on `Webhooks` in the left side of the page and click on the `Add Webhook` button that appears on the right side of the Webhooks page.
+
+1. Now we need to configure the webhook:
+
+    - For `Payload URL` enter the EventListener route that you copied previously.
+
+    - For `Content-Type` select `Application/JSON`
+
+    - For `Secret` enter `1234567`
+
+    - Then select the `Let me select individual events` radio button
+
+        - A list of events should appear. Scroll down and select `Pull_requests`
+
+        ![pull requests](../images/pullRequests.png)
+
+    - Next, scroll down and click on `Add webhook`.
+
+With that configured, our pipeline will be triggered to build on any pull request opened. This will allow us to test out potential changes in a Pull Request before merging with our main branch.
+
+(Optional) However, if you would like to run the pipeline manually, you can do the following:
+
+- Open `./pipeline/pipeline-run.yaml` in a code editor
+
+- Change the `GitUrl` and `ImageUrl` to point to your own resources.
+
+- Run the Pipeline
+
+    ```bash
+    oc create -f pipeline/pipeline-run.yaml
+    ```
+
+## Viewing the Pipeline
+
+1. Navigate to your openshift cluster console and find the Pipelines section on the left navigation menu, and select Pipelines.
+1. From the Pipelines page select the tab that says Pipeline Runs.
+
+    ![pipeline page](../images/pipelinePage.png)
+
+1. You will then be able to see the status of the build process using the pipeline.
+    - There are 5 steps:
+        - Clone the code and store it in the PVC that was created
+        - Import the project to snyk
+        - Scan the code with Snyk
+        - Build and push the container image
+        - Deploy the application
+
+1. If you view the output of the `snyk-test` step you can see the output of the Snyk scan.
+
+    ![scan results](../images/scanResults.png)
+
+# Part 2: Scan the Goof Deployment with Snyk
 
 > You must have joined the *IBM DDS WORKSHOP* Snyk Organization to continue.
 
@@ -101,63 +314,75 @@ In this section, you use Snyk Container's Base Image Upgrade Guidance and Snyk I
 
 ## Get Ready: Import the Goof-RHPDS Repo into Snyk
 
-TODO: Tomas to write the steps to import te application into Snyk. 
-
-1. Sign in to Snyk, then switch to the IBM DDC WORKSGOP Organization under the Red Hat Group.
+1. Sign in to Snyk, then switch to the IBM DDC WORKSHOP Organization under the Red Hat Group.
 
 ![Workshop Organization](./images/workshop-org.png)
 
-2. Create GitHub Intgration
-3. Import
+2. If you haven't already, configure Snyk's GitHub Integration by navigating to Integrations -> Source Control -> GitHub.
+
+![Integrations](images/integrations.png)
+
+3. Once configured, import the repo into Snyk by clicking Add Project -> GitHub -> your fork of the goof-rhpds repo.
+
+![Import Project](images/repo-import.png)
+
+Now that it's imported, let's start fixing issues!
 
 ## Part 3, Module 1: Addressing Container Vulnerabilities
-### Clone the code
 
-TODO: Write the Dockerfile project instructions
+When the Repo imports, Snyk shows the supported manifest files in the repo, including our container's Dockerfile.
 
-In Part 1 we saw vulnerabilities present in the Goof application. To remediate them, you'll re-build the image with a more secure base image. This code for Goof is available at `https://github.com/snyk-partners/goof-rhpds`. 
+[!Dockerfile Project](images/dockerfile-project.png)
 
-
-### Scan the Container Image for Vulnerabilities
-
-Developers can use the Snyk CLI to get vulnerability information and base image upgrade guidance.
-
-1. Scan the image by running the following command.
-
-```
-snyk container test quay.io/$QUAY_USER/goof:before --file=Dockerfile
-```
-
-2. When the scan completes, review the list of vulnerabilities. There are quite a few! If available, Snyk will recommend other potential base images to help you build your container with as few vulnerabilities as possible.
-
-![Base Image Recommendations](./images/base-recommendations.png)
-
-Snyk recommends less vulnerable base images grouped by how likely they are to be compatible:
+1. Click the Dockerfile to enter the project, and review the base image suggestions. Snyk recommends less vulnerable base images grouped by how likely they are to be compatible:
 
 - Minor upgrades are the most likely to be compatible with little work,
 - Major upgrades can introduce breaking changes depending on image usage,
 - Alternative architecture images are shown for more technical users to investigate.
 
-> Open Source vulnerabilities are disclosed daily, so the recommendations you see may differ as the Snyk vulnerability database is constantly updated. This example shows upgrade recommendations as of the day of writing.
+> Open Source vulnerabilities are disclosed daily, so the recommendations you see may differ! This example shows upgrade recommendations as of the day of writing.
 
-### Apply a more secure base image with a PR
+2. To apply a new base image, open a Fix Pull Request to the next available Minor Upgrade.
 
-TODO: TOmas qwill write
+![Container Fix PR](images/container-fix-pr.png)
 
-1. To apply a new base image, open the Dockerfile and replace, or comment out, the old base image with a new one. In this example, we’ll use node:14.16.1.
+3. This PR will kick off the pipeline. In OpenShift, navigate to to Pipelines to see the pipeline executing. The pipeline will fail, because there are still Open Source vulnerabilities to fix.
 
-### Part 3, Module 2: Fix Configuration Issues
+## Part 3, Module 2: Unblock the Pipeline
 
-In Part 1 we also saw that Goof was poorly configured. With Snyk Infrastructure as Code, you can test configuration files directly from the CLI. 
+The pipeline will not allow us to deploy this image until we fix all dependencies with Critical Severity vulnerabilities with a Fix available. These are shown under the package.json project. 
 
-TODO: TOMAS TO WRITE USING THE GITHUB INTEGRATION
+![Open Source Project](images/snyk-oss-project.png)
 
-1. Back in your Terminal, scan for IAC issues in the Deployment file with the Snyk CLI by running the following command.
+1. Click into the `package.json` project and scroll down to see the list of vulnerabilities.
 
-2. Review the IAC scan results. For each file, Snyk displays a list of vulnerabilities—sorted by severity, where each is detailed as follows:
+2. Use the filters on the left to view only the critical severity vulnerabilities with a fix available.
+
+![Filter Vulns](images/filter-vulns.png)
+
+3. Click "Fix this Vulnerability" in the issue card to create a Fix PR that upgrades this component to remediate this vulnerability.
+
+![Open PR](images/open-fix-pr.png)
+
+4. When it's ready, you'll be taken to the PR in GitHub, where you can review the changes in the file diff view.
+
+![Review Changes](images/review-changes.png)
+
+5. Now merge the PR and return to Snyk. When it re-scans the repo, you should now have 0 critical severity vulnerabilities. 
+
+6. Return to the Pipeline view. Your pipeline should now execute without fail.
+
+### Part 3, Module 3: Fix Configuration Issues
+
+In Part 1 we also saw that Goof was poorly configured. With Snyk Infrastructure as Code, you can test configuration files directly from GitHub.
+
+1. In the Snyk project imported earlier, there are two Kubernetes manifests for the goof application. One deploys the application, and the other deploys the mongo database it needs.
+
+2. Click into `goof.yaml` and review the IAC scan results. For each file, Snyk displays a list of vulnerabilities, where each is detailed as follows:
 
 - A clear heading line - specifying the issue that has been detected, the severity of that issue and the Snyk Policy Id for that particular issue.
-- Location - the property path within the configuration file at which the issue has been identified. 
+- Location - the path within the configuration file where the issue was  identified. 
+- The impact of this vulnerability, and how to remediate it. 
 
 ![IAC Issue](./images/iac-issue.png)
 
