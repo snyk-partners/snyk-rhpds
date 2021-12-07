@@ -1,13 +1,14 @@
 # Snyk Workshop for IBM DDC Conference! 
 ## About this Workshop
-Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) and [Snyk Infrastructure as Code](https://snyk.io/product/infrastructure-as-code-security/) to identify security and configuration risks in a sample application deployed into OpenShift. In this developer-centric workshop, you'll need to be familiar with some common tools, described later.
+Welcome! This workshop demonstrates how to use [Snyk Container](https://snyk.io/product/container-vulnerability-management/) and [Snyk Infrastructure as Code](https://snyk.io/product/infrastructure-as-code-security/) to identify security and configuration risks in a sample application deployed into OpenShift. 
 
-The steps below guide you through:
-1. Creating a delivery pipeline using OpenShift Pipelines 
-2. Importing an OpenShift workload into Snyk for scanning and monitoring,
-3. Reviewing the security and configuration scan results in the Snyk UI,
-4. Finding and applying a more secure base image using Snyk’s upgrade guidance,
-5. Securing the Goof application's deployment configuration within OpenShift.
+In this workshop you'll:
+1. Creating am application delivery pipeline using OpenShift Pipelines 
+2. Import the application's OpenShift deployment into Snyk for scanning and monitoring,
+3. Review the security and configuration scan results in the Snyk UI,
+4. Apply a more secure base image using Snyk’s upgrade guidance,
+5. Fix an Open Source Vulnerability using a Fix Pull Request
+5. Secure the Goof application's deployment configuration within OpenShift.
 
 > Note: For this workshop your facilitator invited you into the *IBM DDC WORKSHOP* organization in Snyk. To complete the workshop on your own, you need a Snyk account with the [Business plan](snyk.io/plans) and your own cluster to deploy the Kubernetes integration into. 
 
