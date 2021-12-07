@@ -34,6 +34,5 @@ git clone https://github.com/$GH_USER/snyk-rhpds
 1. Create an account or sign in to [Quay.io](https://quay.io).
 
 ### Install the OpenShift CLI
-#TODO: Finish the Cluster Request step 2 in case user needs to request access. 
+
 1. Install oc on your workstation by following the [installation steps](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html).
-2. oc login
