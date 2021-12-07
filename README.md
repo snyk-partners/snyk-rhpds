@@ -179,7 +179,23 @@ To import workloads into Snyk, users can select workloads in the Snyk UI, or imp
     oc apply -f pipeline/snyk-pvc.yaml
     ```
 
-1. Create the Tekton Triggers components
+1. Before we create the automation for Tekton, we need to make a change to our TriggerTemplate file. In a code editor, open `./pipeline/triggers/triggerTemplate.yaml` and go to line 28.
+
+- Line 28 should look like the following:
+
+    ```yaml
+    value: quay.io/<quay_user>/goof
+    ```
+
+- Replace `<quay_user>` with your Quay username. For example, my Quay username is `odrodrig_us` so my line 28 will look like this:
+
+    ```yaml
+    value: quay.io/odrodrig_us/goof
+    ```
+
+    Save the file when done.
+
+4. Create the Tekton Triggers components
 
     ```bash
     oc apply -f pipeline/triggers/
