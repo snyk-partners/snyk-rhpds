@@ -10,17 +10,17 @@ You'll also need access to a few developer tools.
 - Any IDE (we use VS Code)
 - OpenShift CLI (oc)
 
-You'll receive an e-mail the day before the workshop adding you to the OpenShift Workshop organization in Snyk. Keep an eye out! 
+You'll receive an e-mail the day before the workshop adding you to the IBM DDC Conference organization in Snyk. Keep an eye out! 
 
 ### Generate the GitHub Repo from the Template
 1. Navigate to the [goof-rhpds repo](https://github.com/snyk-partners/goof-rhpds) on GitHub, then click "Use this Template" to generate it in your account.
 
 ![Repo Template](images/github-template.png)
 
-2. Clone the Repo to your workstation. Be sure to replace your GitHub username in the command or set the GITHUB_USER environment variable.
+2. Clone the Repo to your workstation. Be sure to replace your GitHub username in the command or set the GH_USER environment variable.
 
 ```sh
-git clone https://github.com/$GITHUB_USER/snyk-rhpds
+git clone https://github.com/$GH_USER/snyk-rhpds
 ```
 
 ### Create a Snyk Account
@@ -32,16 +32,6 @@ git clone https://github.com/$GITHUB_USER/snyk-rhpds
 ### Create a Quay Account and Repo
 
 1. Create an account or sign in to [Quay.io](https://quay.io).
-
-2. Once signed in, create a Repository on Quay.io. We recommend calling it `goof`.
-
-![Create Repo](images/quay-repo.png)
-
-3. Save your Quay Username as an Environment Variable to use it in future steps. 
-
-> Your Quay Username is displayed in the upper right corner of Quay.io. 
-
-![Quay Avatar](./images/quay-user-avatar.png)
 
 ### Install the OpenShift CLI
 #TODO: Finish the Cluster Request step 2 in case user needs to request access. 
